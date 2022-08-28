@@ -3,20 +3,43 @@ package minesweeper;
 import static minesweeper.Board.board;
 
 public class Cell {
-    final String EMPTY = ".";
-    final String MARK = "*";
+    final String HIDDEN = ".";
+    final String MARKED = "*";
+    final String EMPTY = "/";
+    final String MINE = "X";
 
     private boolean mine = false;
-    private String state = EMPTY;
+    private boolean showMine = false;
+    private boolean marked = false;
+    private boolean shown = false;
+
     private int minesAround = 0;
+    private final int index;
+
+    Cell(int i) {
+        this.index = i;
+    }
 
     @Override
     public String toString() {
-        if (minesAround == 0) {
-            return this.state;
-        } else {
+        if (showMine) {
+            return MINE;
+        } else if (isMarked()) {
+            return MARKED;
+        } else if (isHidden()) {
+            return HIDDEN;
+        } else if (isNumber()) {
             return String.valueOf(minesAround);
         }
+        return EMPTY;
+    }
+
+    public boolean isShown() {
+        return shown;
+    }
+
+    public boolean isHidden() {
+        return !shown;
     }
 
     public void setMine() {
@@ -36,19 +59,15 @@ public class Cell {
     }
 
     public boolean isMarked() {
-        return this.state.equals(MARK);
+        return marked;
     }
 
     public void toggle() {
-        if (this.state.equals(MARK)) {
-            this.state = EMPTY;
-        } else {
-            this.state = MARK;
-        }
+        marked = !marked;
     }
 
-    public void setAmountOfMineAround(int i) {
-        this.minesAround = countMines(i);
+    public void setAmountOfMineAround() {
+        this.minesAround = countMines(this.index);
     }
 
     private int countMines(int i) {
@@ -92,5 +111,62 @@ public class Cell {
             return result + checkUp(i + 1) + checkDown(i + 1);
         }
         return 0;
+    }
+
+    public void showMine() {
+        this.showMine = true;
+    }
+
+    public void explore() {
+        this.marked = false;
+        this.shown = true;
+        if (!isNumber()) {
+            exploreAround();
+        }
+    }
+
+    private void exploreAround() {
+        exploreRightSide();
+        exploreLeftSide();
+        exploreUp();
+        exploreDown();
+    }
+
+    private void exploreRightSide() {
+        if (((index + 1) % 9) != 0) {
+            if (board.get(index + 1).isHidden()){
+                board.get(index + 1).explore();
+            }
+            //Diagonals on right side
+            board.get(index + 1).exploreUp();
+            board.get(index + 1).exploreDown();
+        }
+    }
+
+    private void exploreLeftSide() {
+        if (index % 9 != 0) {
+            if (board.get(index - 1).isHidden()){
+                board.get(index - 1).explore();
+            }
+            //Diagonals on left side
+            board.get(index - 1).exploreUp();
+            board.get(index - 1).exploreDown();
+        }
+    }
+
+    private void exploreDown() {
+        if ((index < 72)) {
+            if (board.get(index + 9).isHidden()){
+                board.get(index + 9).explore();
+            }
+        }
+    }
+
+    private void exploreUp() {
+        if ((index > 8)) {
+            if (board.get(index - 9).isHidden()){
+                board.get(index - 9).explore();
+            }
+        }
     }
 }

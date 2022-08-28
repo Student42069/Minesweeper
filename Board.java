@@ -2,6 +2,8 @@ package minesweeper;
 
 import java.util.*;
 
+import static java.lang.System.exit;
+
 public class Board {
     Scanner sc = new Scanner(System.in);
     int numberOfMines;
@@ -21,7 +23,7 @@ public class Board {
 
     private void initializeBoard() {
         for (int i = 0; i < 81; i++) {
-            board.add(new Cell());
+            board.add(new Cell(i));
         }
     }
 
@@ -39,9 +41,9 @@ public class Board {
     }
 
     private void initializeHints() {
-        for (int i = 0; i < board.size(); i++) {
-            if (board.get(i).isEmpty()) {
-                board.get(i).setAmountOfMineAround(i);
+        for (Cell cell : board) {
+            if (cell.isEmpty()) {
+                cell.setAmountOfMineAround();
             }
         }
     }
@@ -61,16 +63,44 @@ public class Board {
     public void start() {
         int x;
         int y;
+        String command;
 
         while (true) {
-            System.out.print("Set/delete mines marks (x and y coordinates):");
+            System.out.print("Set/unset mine marks or claim a cell as free:");
             x = sc.nextInt();
             y = sc.nextInt();
-            placeMark(x, y);
+            command = sc.nextLine();
+            if (command.equals(" mine")) {
+                placeMark(x, y);
+            } else if (command.equals(" free")) {
+                explore(x, y);
+                printBoard();
+            }
+
             if (checkIfAllMinesMarked()) {
                 System.out.println("Congratulations! You found all mines!");
                 break;
-            };
+            }
+        }
+    }
+
+    private void explore(int x, int y) {
+        int position = (x - 1) + (y - 1) * 9;
+        if (board.get(position).isMine()) {
+            showAllMines();
+            printBoard();
+            System.out.println("You stepped on a mine and failed!");
+            exit(0);
+        } else {
+            board.get(position).explore();
+        }
+    }
+
+    private void showAllMines() {
+        for (Cell cell : board) {
+            if (cell.isMine()) {
+                cell.showMine();
+            }
         }
     }
 
@@ -90,7 +120,7 @@ public class Board {
 
     private void placeMark(int x, int y) {
         int position = (x - 1) + (y - 1) * 9;
-        if (board.get(position).isNumber()) {
+        if (board.get(position).isShown() && board.get(position).isNumber()) {
             System.out.println("There is a number here!");
         } else {
             board.get(position).toggle();
