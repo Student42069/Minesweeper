@@ -9,7 +9,6 @@ public class Cell {
     final String MINE = "X";
 
     private boolean mine = false;
-    private boolean showMine = false;
     private boolean marked = false;
     private boolean shown = false;
 
@@ -22,7 +21,7 @@ public class Cell {
 
     @Override
     public String toString() {
-        if (showMine) {
+        if (isMine() && isShown()) {
             return MINE;
         } else if (isMarked()) {
             return MARKED;
@@ -114,7 +113,7 @@ public class Cell {
     }
 
     public void showMine() {
-        this.showMine = true;
+        this.shown = true;
     }
 
     public void explore() {
