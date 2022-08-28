@@ -28,24 +28,10 @@ public class Board {
     }
 
     private int countMines(int i) {
-        return checkRight2(i) +
-                checkLeft2(i) +
+        return checkRightSide(i) +
+                checkLeftSide(i) +
                 checkUp(i) +
                 checkDown(i);
-    }
-
-    private int checkRightSide(int i) {
-        if (((i + 1) % 9) != 0) {
-            return checkUp(i + 1) + checkDown(i + 1);
-        }
-        return 0;
-    }
-
-    private int checkLeftSide(int i) {
-        if (i % 9 != 0) {
-            return checkUp(i - 1) + checkDown(i - 1);
-        }
-        return 0;
     }
 
     private int checkDown(int i) {
@@ -62,14 +48,7 @@ public class Board {
         return 0;
     }
 
-    private int checkLeft(int i) {
-        if ((i % 9 != 0) && board.get(i - 1).equals("X")) {
-            return 1;
-        }
-        return 0;
-    }
-
-    private int checkLeft2(int i) {
+    private int checkLeftSide(int i) {
         int result = 0;
         if (i % 9 != 0) {
             if (board.get(i - 1).equals("X")) {
@@ -80,14 +59,7 @@ public class Board {
         return 0;
     }
 
-    private int checkRight(int i) {
-        if (((i + 1) % 9) != 0 && board.get(i + 1).equals("X")) {
-            return 1;
-        }
-        return 0;
-    }
-
-    private int checkRight2(int i) {
+    private int checkRightSide(int i) {
         int result = 0;
         if (((i + 1) % 9) != 0) {
             if (board.get(i + 1).equals("X")) {
