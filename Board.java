@@ -11,8 +11,91 @@ public class Board {
     Board() {
         System.out.println("How many mines do you want on the field?");
         this.numberOfMines = sc.nextInt();
-        initializeBoard();
+        initializeMines();
+        initializeHints();
         printBoard();
+    }
+
+    private void initializeHints() {
+        for (int i = 0; i < board.size(); i++) {
+            if (board.get(i).equals(".")) {
+                int mines = countMines(i);
+                if (mines > 0) {
+                    board.set(i, String.valueOf(mines));
+                }
+            }
+        }
+    }
+
+    private int countMines(int i) {
+        return checkRight2(i) +
+                checkLeft2(i) +
+                checkUp(i) +
+                checkDown(i);
+    }
+
+    private int checkRightSide(int i) {
+        if (((i + 1) % 9) != 0) {
+            return checkUp(i + 1) + checkDown(i + 1);
+        }
+        return 0;
+    }
+
+    private int checkLeftSide(int i) {
+        if (i % 9 != 0) {
+            return checkUp(i - 1) + checkDown(i - 1);
+        }
+        return 0;
+    }
+
+    private int checkDown(int i) {
+        if ((i < 72) && board.get(i + 9).equals("X")) {
+            return 1;
+        }
+        return 0;
+    }
+
+    private int checkUp(int i) {
+        if ((i > 8) && board.get(i - 9).equals("X")) {
+            return 1;
+        }
+        return 0;
+    }
+
+    private int checkLeft(int i) {
+        if ((i % 9 != 0) && board.get(i - 1).equals("X")) {
+            return 1;
+        }
+        return 0;
+    }
+
+    private int checkLeft2(int i) {
+        int result = 0;
+        if (i % 9 != 0) {
+            if (board.get(i - 1).equals("X")) {
+                result++;
+            }
+            return result + checkUp(i - 1) + checkDown(i - 1);
+        }
+        return 0;
+    }
+
+    private int checkRight(int i) {
+        if (((i + 1) % 9) != 0 && board.get(i + 1).equals("X")) {
+            return 1;
+        }
+        return 0;
+    }
+
+    private int checkRight2(int i) {
+        int result = 0;
+        if (((i + 1) % 9) != 0) {
+            if (board.get(i + 1).equals("X")) {
+                result++;
+            }
+            return result + checkUp(i + 1) + checkDown(i + 1);
+        }
+        return 0;
     }
 
     private void printBoard() {
@@ -24,7 +107,7 @@ public class Board {
         }
     }
 
-    private void initializeBoard() {
+    private void initializeMines() {
         int rand;
         for (int i = 0; i < numberOfMines; i++) {
             while (true){
